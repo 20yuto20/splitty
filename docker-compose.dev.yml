@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: splitty-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: splitty
+      POSTGRES_PASSWORD: splitty
+      POSTGRES_DB: splitty
+    ports:
+      - "5432:5432"
+    volumes:
+      - splitty-db-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U splitty -d splitty"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  splitty-db-dev-data:

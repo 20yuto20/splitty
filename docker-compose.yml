@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: splitty-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: splitty
+      POSTGRES_PASSWORD: splitty
+      POSTGRES_DB: splitty
+    ports:
+      - "5432:5432"
+    volumes:
+      - splitty-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U splitty -d splitty"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    image: splitty-migrate
+    container_name: splitty-migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://splitty:splitty@db:5432/splitty?schema=public
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: splitty-app
+    container_name: splitty-app
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://splitty:splitty@db:5432/splitty?schema=public
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+
+volumes:
+  splitty-db-data:
