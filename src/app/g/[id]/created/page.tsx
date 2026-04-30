@@ -3,8 +3,11 @@ import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { ShareLink } from "@/components/ShareLink";
+import { getSiteUrl } from "@/lib/site-url";
 
 type Props = { params: { id: string } };
+
+export const dynamic = "force-dynamic";
 
 export default async function CreatedPage({ params }: Props) {
   const group = await prisma.group.findUnique({
@@ -13,8 +16,7 @@ export default async function CreatedPage({ params }: Props) {
   });
   if (!group) notFound();
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const url = `${base}/g/${group.id}`;
+  const url = `${getSiteUrl()}/g/${group.id}`;
 
   return (
     <div className="space-y-8 pt-6 text-center">
