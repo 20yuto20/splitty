@@ -5,18 +5,19 @@ import { prisma } from "@/lib/db";
 import { ShareLink } from "@/components/ShareLink";
 import { getSiteUrl } from "@/lib/site-url";
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export const dynamic = "force-dynamic";
 
 export default async function CreatedPage({ params }: Props) {
+  const { id } = await params;
   const group = await prisma.group.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, name: true },
   });
   if (!group) notFound();
 
-  const url = `${getSiteUrl()}/g/${group.id}`;
+  const url = `${await getSiteUrl()}/g/${group.id}`;
 
   return (
     <div className="space-y-8 pt-6 text-center">

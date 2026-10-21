@@ -5,9 +5,10 @@ function csvEscape(value: string): string {
   return value;
 }
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const group = await prisma.group.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       expenses: {
         orderBy: { createdAt: "asc" },
