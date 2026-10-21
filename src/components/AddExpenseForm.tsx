@@ -234,7 +234,7 @@ export function AddExpenseForm({
         </>
       ) : (
         <div>
-          <span className="label">Each member's share</span>
+          <span className="label">Each member&apos;s share</span>
           <ul className="card divide-y divide-slate-100">
             {members.map((m) => (
               <li key={m.id} className="flex items-center justify-between gap-3 px-4 py-3">
