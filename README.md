@@ -10,6 +10,7 @@ Splitty lets you create a group, invite members via a shareable link, log who pa
 - **Backend**: Next.js API routes (Node.js)
 - **Database**: PostgreSQL via Prisma
 - **Hosting**: Vercel
+- **Runtime**: Node.js 24 LTS — `.nvmrc` for local dev, `engines.node` (`24.x`) for Vercel, `NODE_IMAGE` in the `Dockerfile` for containers. Keep all three in sync.
 
 ## Project structure
 
@@ -84,6 +85,16 @@ npm run dev
 ```
 
 Hosted Postgres options that work out of the box: [Neon](https://neon.tech), [Supabase](https://supabase.com), Vercel Postgres.
+
+### Smoke test
+
+With the app running against a **disposable** database:
+
+```bash
+BASE_URL=http://localhost:3000 npm run smoke
+```
+
+It creates a group, adds/edits/deletes expenses and checks balances, settlement, CSV and share links. It refuses non-local URLs unless `SMOKE_ALLOW_REMOTE=1` is set.
 
 ## Deploying to Vercel
 
