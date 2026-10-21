@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const group = await prisma.group.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       members: { orderBy: { createdAt: "asc" } },
       expenses: {
@@ -30,7 +31,8 @@ const PatchSchema = z.object({
   removeMemberIds: z.array(z.string()).max(50).optional(),
 });
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const parsed = PatchSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input." }, { status: 400 });
@@ -38,7 +40,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const { name, addMembers, removeMemberIds } = parsed.data;
 
   const group = await prisma.group.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { members: true },
   });
   if (!group) {
