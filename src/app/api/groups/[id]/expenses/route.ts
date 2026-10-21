@@ -16,7 +16,8 @@ const Schema = z.object({
     .min(1),
 });
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const parsed = Schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input." }, { status: 400 });
@@ -24,7 +25,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const { description, amount, payerId, shares } = parsed.data;
 
   const group = await prisma.group.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { members: true },
   });
   if (!group) {

@@ -7,13 +7,14 @@ import { settle } from "@/lib/settlement";
 import { formatMoney } from "@/lib/currency";
 import { ExpenseRow } from "@/components/ExpenseRow";
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export const dynamic = "force-dynamic";
 
 export default async function GroupPage({ params }: Props) {
+  const { id } = await params;
   const group = await prisma.group.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       members: { orderBy: { createdAt: "asc" } },
       expenses: {
