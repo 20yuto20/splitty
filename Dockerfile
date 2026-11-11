@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1.7
 
 # Single source of truth for the Node.js runtime used by every stage below.
-# Node 20 is EOL; 24.22.1 includes the October 2026 security release.
+# Node 20 is EOL; 24.22.3 is the November 2026 security release.
 # Keep in sync with .nvmrc and package.json "engines" (Vercel uses the major from there).
 # Each stage also upgrades ca-certificates-bundle: the pinned image ships
 # 20260909-r0, which still trusts the emSign (eMudhra) roots removed in 20261020-r0.
-ARG NODE_IMAGE=node:24.22.1-alpine@sha256:6a1c190e17215d844926b0677f4bf87273ff7d5e54db06d3b5b5863ab0b09a3d
+ARG NODE_IMAGE=node:24.22.3-alpine@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
 
 # ---------- deps: install npm dependencies ----------
 FROM ${NODE_IMAGE} AS deps
